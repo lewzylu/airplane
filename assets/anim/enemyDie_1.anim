@@ -1,0 +1,55 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "enemyDie_1",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 1,
+  "sample": 5,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "0e4fa70d-c782-4974-9e19-459c31725986"
+            }
+          },
+          {
+            "frame": 0.2,
+            "value": {
+              "__uuid__": "30db4928-83c8-4ff6-8abe-bba4808d8cf2"
+            }
+          },
+          {
+            "frame": 0.4,
+            "value": {
+              "__uuid__": "967c9c13-f2c8-4a03-9d9f-2be85ef49abd"
+            }
+          },
+          {
+            "frame": 0.6,
+            "value": {
+              "__uuid__": "f8d3c51b-cd6d-45ed-9f1f-e1223a29a0b8"
+            }
+          },
+          {
+            "frame": 0.8,
+            "value": {
+              "__uuid__": "bc4d524f-10b2-4271-ab77-802834b48e30"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": [
+    {
+      "frame": 1,
+      "func": "over",
+      "params": []
+    }
+  ]
+}
