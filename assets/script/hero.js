@@ -20,22 +20,22 @@ cc.Class({
 
     onCollisionEnter: function (other, self) {
         console.log('on collision enter');
-        if (self.tag == 100) {
+        if (self.tag == 100 && this.isAlive == true) {
             this.isAlive = false
             game.gameType = 3
             this.die()
         }
-        if (other.tag == 1) {
-            var js = other.node.getComponent("enemy_1")
-            if (js && js.isAlive == true) {
-                js.hit()
-            }
-        } else if (other.tag == 2) {
-            var js = other.node.getComponent("enemy_2")
-            if (js && js.isAlive == true) {
-                js.hit()
-            }
-        }
+        // if (other.tag == 1) {
+        //     var js = other.node.getComponent("enemy_1")
+        //     if (js && js.isAlive == true) {
+        //         js.hit()
+        //     }
+        // } else if (other.tag == 2) {
+        //     var js = other.node.getComponent("enemy_2")
+        //     if (js && js.isAlive == true) {
+        //         js.hit()
+        //     }
+        // }
     },
 
     init: function () {
@@ -50,7 +50,6 @@ cc.Class({
     },
 
     die: function () {
-        this.isAlive = false
         var anim = this.getComponent(cc.Animation);
         anim.play('heroDie');
         anim.over = function () {
@@ -59,7 +58,6 @@ cc.Class({
             game.setGameOver()
         }.bind(this)
     },
-
     update(dt) {
     },
 });

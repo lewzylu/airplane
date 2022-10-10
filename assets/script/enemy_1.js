@@ -9,7 +9,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -25,7 +24,6 @@ cc.Class({
     },
 
     normal: function () {
-
         var anim = this.getComponent(cc.Animation);
         anim.play('enemyNormal_1');
     },
@@ -40,11 +38,12 @@ cc.Class({
     },
 
     update(dt) {
-        if (this.node.y <= - game.bg_1.height / 2) {
-            game.onEnemyKilled(this.node, 1)
-        }
+        if(!this.isAlive) return
         if (game.gameType == 1 || game.gameType == 3) {
             this.node.y = this.node.y - this.speed
+        }
+        if (this.node.y <= - game.bg_1.height / 2) {
+            game.onEnemyKilled(this.node, 1)
         }
     },
 });

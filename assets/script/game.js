@@ -83,11 +83,11 @@ cc.Class({
             this.gameOver.active = false
             this.removeAllBullet()
             this.removeAllEnemy()
+            this.hero.setPosition(cc.v2(0, -this.bg_1.height / 2))
             var js = this.hero.getComponent("hero")
             if (js) {
                 js.init()
             }
-            this.hero.setPosition(cc.v2(0, -this.bg_1.height / 2))
         } else if (str == 'backHome') {
             this.gameType = 0
             cc.log('点击了返回主页按钮')
@@ -185,22 +185,19 @@ cc.Class({
         var children = this.node.children;
         for (var i = children.length - 1; i >= 0; --i) {
             if (children[i].getComponent("enemy_1")) {
-                this.onBulletKilled(children[i], 1)
+                this.onEnemyKilled(children[i], 1)
+                cc.log("remove enemy_1")
+            } else if (children[i].getComponent("enemy_2")) {
+                cc.log("remove enemy_2")
+                this.onEnemyKilled(children[i], 2)
             }
         }
-        for (var i = children.length - 1; i >= 0; --i) {
-            if (children[i].getComponent("enemy_2")) {
-                this.onBulletKilled(children[i], 2)
-            }
-        }
-        this.enemy1_Pool.clear()
-        this.enemy2_Pool.clear()
     },
 
     onEnemyKilled: function (enemy, enemyType) {
         if (enemyType == 1) {
             this.enemy1_Pool.put(enemy);
-        } else {
+        } else if (enemyType == 2) {
             this.enemy2_Pool.put(enemy);
         }
     },
