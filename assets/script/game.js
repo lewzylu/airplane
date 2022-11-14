@@ -13,6 +13,21 @@ cc.Class({
         pre_bullet: cc.Prefab,
         pre_enemy_1: cc.Prefab,
         pre_enemy_2: cc.Prefab,
+        pre_enemy_3: cc.Prefab,
+        lab_score: cc.Label,
+        lab_best_score: cc.Label,
+        bg_audio: {
+            default: null,
+            type: cc.AudioClip
+        },
+        enemy_blowup_audio: {
+            default: null,
+            type: cc.AudioClip
+        },
+        hero_blowup_audio: {
+            default: null,
+            type: cc.AudioClip
+        },
     },
 
     onLoad() {
@@ -28,17 +43,26 @@ cc.Class({
         this.gameOver.active = false
         this.gameOver.zIndex = 2
         this.gamePause.zIndex = 2
+        this.lab_score.zIndex = 3
+        this.lab_best_score.zIndex = 3
         this.bulletTime = 0
         this.bulletPool = new cc.NodePool()
         this.enemyTime = 0
         this.enemy1_Pool = new cc.NodePool()
         this.enemy2_Pool = new cc.NodePool()
+        this.enemy3_Pool = new cc.NodePool()
+        this.game_level = 1
+        this.bullet_create_interval = 50
+        this.enemy_create_interval = 20
         this.hero.setPosition(cc.v2(0, -this.bg_1.height / 2))
-
         this.gameType = 0 // 0:ready,1:playing,2:pause,3:over
 
         cc.director.getCollisionManager().enabled = true;
         cc.director.getCollisionManager().enabledDebugDraw = true;
+
+        this.scoreNum = 0
+        this.bestScoreNum = 0
+        this.addScore(0)
 
     },
 
@@ -48,6 +72,7 @@ cc.Class({
             this.gameReady.active = false
             this.gamePlaying.active = true
             this.isBgMove = true
+            this.bgAudioId = cc.audioEngine.playMusic(this.bg_audio, true);
             if (this.gameType == 0) {
                 this.gameType = 1
             }
@@ -63,8 +88,16 @@ cc.Class({
 
         this.node.on('touchend', function (event) {
             console.log('touchend')
-            this.createBullet()
         }, this)
+    },
+
+    addScore: function (score) {
+        this.scoreNum += score
+        this.lab_score.string = this.scoreNum
+        if (this.scoreNum > this.bestScoreNum) {
+            this.bestScoreNum = this.scoreNum
+        }
+        this.lab_best_score.string = this.bestScoreNum
     },
 
     clickBtn: function (sender, str) {
@@ -72,10 +105,14 @@ cc.Class({
             this.gameType = 2
             cc.log('点击了暂停按钮')
             this.gamePause.active = true
+            this.isBgMove = false
+            cc.audioEngine.pauseMusic();
         } else if (str == 'continue') {
             this.gameType = 1
             cc.log('点击了继续按钮')
             this.gamePause.active = false
+            this.isBgMove = true
+            cc.audioEngine.resumeMusic();
         } else if (str == 'reStart') {
             this.gameType = 1
             cc.log('点击了重新开始按钮')
@@ -88,6 +125,9 @@ cc.Class({
             if (js) {
                 js.init()
             }
+            this.scoreNum = 0
+            this.addScore(0)
+            cc.audioEngine.resumeMusic();
         } else if (str == 'backHome') {
             this.gameType = 0
             cc.log('点击了返回主页按钮')
@@ -103,6 +143,9 @@ cc.Class({
             if (js) {
                 js.init()
             }
+            this.scoreNum = 0
+            this.addScore(0)
+            cc.audioEngine.stopMusic();
         }
     },
 
@@ -160,7 +203,7 @@ cc.Class({
             }
             enemy.parent = this.node
             js = enemy.getComponent("enemy_1")
-        } else {
+        } else if (enemyType == 2) {
             if (this.enemy2_Pool.size() > 0) {
                 enemy = this.enemy2_Pool.get();
             } else {
@@ -168,6 +211,14 @@ cc.Class({
             }
             enemy.parent = this.node
             js = enemy.getComponent("enemy_2")
+        } else if (enemyType == 3) {
+            if (this.enemy3_Pool.size() > 0) {
+                enemy = this.enemy3_Pool.get();
+            } else {
+                enemy = cc.instantiate(this.pre_enemy_3);
+            }
+            enemy.parent = this.node
+            js = enemy.getComponent("enemy_3")
         }
         if (js) {
             js.init()
@@ -190,6 +241,9 @@ cc.Class({
             } else if (children[i].getComponent("enemy_2")) {
                 cc.log("remove enemy_2")
                 this.onEnemyKilled(children[i], 2)
+            } else if (children[i].getComponent("enemy_3")) {
+                cc.log("remove enemy_3")
+                this.onEnemyKilled(children[i], 3)
             }
         }
     },
@@ -199,8 +253,14 @@ cc.Class({
             this.enemy1_Pool.put(enemy);
         } else if (enemyType == 2) {
             this.enemy2_Pool.put(enemy);
+        } else if (enemyType == 3) {
+            this.enemy3_Pool.put(enemy);
         }
     },
+
+    levelUp() {
+        this.game_level += 1;
+    }
 
     update(dt) {
         if (this.isBgMove) {
@@ -208,15 +268,19 @@ cc.Class({
 
         }
         this.bulletTime++
-        if (this.bulletTime % 20 == 0 && this.gameType == 1) {
-            this.bulletTime = 0
-            this.createBullet()
+        if (this.gameType == 1) {
+            if (this.bulletTime % this.bullet_create_interval == 0) {
+                this.bulletTime = 0
+                this.createBullet()
+            }
         }
         this.enemyTime++
-        if (this.enemyTime % 200 == 0 && (this.gameType == 1 || this.gameType == 3)) {
-            cc.log("enemy create")
-            this.enemyTime = 0
-            this.createEnemy(Math.floor(Math.random() * 2 + 1))
+        if (this.gameType == 1 || this.gameType == 3) {
+            if (this.enemyTime % this.enemy_create_interval == 0) {
+                cc.log("enemy create")
+                this.enemyTime = 0
+                this.createEnemy(Math.floor(Math.random() * 3 + 1))
+            }
         }
 
     },

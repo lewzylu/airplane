@@ -31,9 +31,11 @@ cc.Class({
     hit: function () {
         this.isAlive = false
         var anim = this.getComponent(cc.Animation);
+        cc.audioEngine.play(game.enemy_blowup_audio, false);
         anim.play('enemyDie_1');
         anim.over = function () {
             game.onEnemyKilled(this.node, 1)
+            game.addScore(100)
         }
     },
 

@@ -21,24 +21,25 @@ cc.Class({
     init: function () {
         this.isAlive = true
         this.speed = 5
-        this.hp = 2
+        this.hp = 8
         this.normal()
     },
 
     normal: function () {
         var anim = this.getComponent(cc.Animation);
-        anim.play('enemyNormal_2');
+        anim.play('enemyNormal_3');
     },
 
     hit: function () {
         if (this.isAlive == true) {
-            if (this.hp == 2) {
-                var anim = this.getComponent(cc.Animation);
-                anim.play('enemyHit_2');
-                this.hp = 1;
-            } else if (this.hp == 1) {
+            this.hp = this.hp - 1;
+            cc.log(this.hp)
+            if (this.hp == 0) {
                 this.isAlive = false
                 this.die()
+            } else {
+                var anim = this.getComponent(cc.Animation);
+                anim.play('enemyHit_3');
             }
         }
     },
@@ -46,10 +47,10 @@ cc.Class({
     die: function () {
         cc.audioEngine.play(game.enemy_blowup_audio, false);
         var anim = this.getComponent(cc.Animation);
-        anim.play('enemyDie_2');
+        anim.play('enemyDie_3');
         anim.over = function () {
-            game.onEnemyKilled(this.node, 2)
-            game.addScore(200)
+            game.onEnemyKilled(this.node, 3)
+            game.addScore(500)
         }
     },
 
@@ -58,7 +59,7 @@ cc.Class({
             return
         }
         if (this.node.y <= - game.bg_1.height / 2) {
-            game.onEnemyKilled(this.node, 2)
+            game.onEnemyKilled(this.node, 3)
         }
         if (game.gameType == 1 || game.gameType == 3) {
             this.node.y = this.node.y - this.speed

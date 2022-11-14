@@ -29,6 +29,11 @@ cc.Class({
             if (js && js.isAlive == true) {
                 js.hit()
             }
+        } else if (other.tag == 3) {
+            var js = other.node.getComponent("enemy_3")
+            if (js && js.isAlive == true) {
+                js.hit()
+            }
         }
     },
 

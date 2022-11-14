@@ -50,6 +50,7 @@ cc.Class({
     },
 
     die: function () {
+        cc.audioEngine.play(game.hero_blowup_audio, false);
         var anim = this.getComponent(cc.Animation);
         anim.play('heroDie');
         anim.over = function () {
